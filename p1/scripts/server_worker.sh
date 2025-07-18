@@ -4,6 +4,7 @@ sudo apt-get update && apt-get upgrade -y
 
 TOKEN_FILE="/vagrant/token/node-token"
 
+# Searching for Token during 30secs
 for i in {1..30}; do
   if [ -f "$TOKEN_FILE" ]; then
     echo "✅ Token has been found."
@@ -13,9 +14,9 @@ for i in {1..30}; do
   sleep 1
 done
 
-# === Vérification du token ===
+# If file doesn't exists, stops provisioning
 if [ ! -f "$TOKEN_FILE" ]; then
-  echo "❌ File $TOKEN_FILE not found. Stopping program."
+  echo "❌ File $TOKEN_FILE not found. Stopping provisioning."
   exit 1
 fi
 
