@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'yaml'
+
+begin
+  config_file = YAML.load_file('confs/conf.yaml')
+rescue Errno::ENOENT
+  puts "YAML file not found. Exiting Program."
+  exit 1
+rescue Psych::SyntaxError
+  puts "Syntax Error in YAML file. Exiting Program."
+  exit 1
+end
+
+server_user = "#{config_file['local_user']}S"
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+
+  config.vm.provider config_file['vm_provider'] do |vb|
+    vb.gui = false
+    vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+    vb.memory = config_file['vm_alloc_mem']
+    vb.cpus = config_file['vm_alloc_cpu']
+  end
+
+  config.vm.boot_timeout = config_file['vm_timeout']
+
+  config.vm.define server_user do |server|
+    server.vm.box = config_file['vm_box']
+    server.vm.hostname = server_user
+    server.vm.network "private_network", ip: config_file['server_ip']
+
+    server.vm.provision "shell",
+      path: config_file['ssh_config'],
+      privileged: true
+
+    server.vm.provision "file",
+      source: config_file['ssh_public_key'],
+      destination: config_file['ssh_authorized_keys']
+
+    server.vm.provision "shell",
+      path: config_file['ssh_perm'],
+      privileged: true
+
+    server.vm.provision "shell",
+      path: config_file['server_script'], env: {
+      "SERVER_IP" => config_file['server_ip']
+      },
+      privileged: true
+
+  end
+
+end

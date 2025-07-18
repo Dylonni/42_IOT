@@ -1,0 +1,97 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# # if using a config file, uncomment below lines
+require 'yaml'
+
+begin
+  # Assign configuration file by searching for the specificed file at the specified path.
+  config_file = YAML.load_file('confs/conf.yaml')
+  # Exception is raised if no file is found or if syntax inside is incorrect. Program stops.
+rescue Errno::ENOENT
+  puts "YAML file not found. Exiting Program."
+  exit 1
+rescue Psych::SyntaxError
+  puts "Syntax Error in YAML file. Exiting Program."
+  exit 1
+end
+
+# ------------------------------------------------------------------------------------- #
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+server_user = "#{config_file['local_user']}S"
+server_worker_user = "#{config_file['local_user']}SW"
+
+Vagrant.configure("2") do |config|
+  
+  # Prevent vagrant form erasing default ssh key upon VM creation
+  config.ssh.insert_key = false
+
+  config.vm.provider config_file['vm_provider'] do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = false
+    # Enables nested VM creation
+    vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+    # Set memory for the VM
+    vb.memory = config_file['vm_alloc_mem']
+    # Set CPUs for the VM
+    vb.cpus = config_file['vm_alloc_cpu']
+  end
+
+  # Time the VM will try to boot before timing out
+  config.vm.boot_timeout = config_file['vm_timeout']
+
+  # Configure the server
+  config.vm.define server_user do |server|
+    server.vm.box = config_file['vm_box']
+    server.vm.hostname = server_user
+    server.vm.network "private_network", ip: config_file['server_ip']
+
+  # Provisioning the VM with a script, the script is running with root privileges
+  # Creating folders that will recieve the host public key
+    server.vm.provision "shell",
+      path: config_file['ssh_config'],
+      privileged: true
+
+  # Provisioning the VM with a file, the created SSH key on the host machine will be transfered to the VM authorized keys
+  # in order to connect via SSH without any password prompt
+    server.vm.provision "file",
+      source: config_file['ssh_public_key'],
+      destination: config_file['ssh_authorized_keys']
+
+  # Provisioning the VM with a script, grants the folders and key access to the user 'vagrant'
+    server.vm.provision "shell",
+      path: config_file['ssh_perm'],
+      privileged: true
+
+  # Provisioning the VM with a script, installing and configuring K3S for the server
+    server.vm.provision "shell",
+      path: config_file['server_script'], env: {
+      "SERVER_IP" => config_file['server_ip']
+      },
+      privileged: true
+  end
+
+  # Configure the server_worker (node)
+  config.vm.define server_worker_user do |server_worker|
+    server_worker.vm.box = config_file['vm_box']
+    server_worker.vm.hostname = server_worker_user
+    server_worker.vm.network "private_network", ip: config_file['server_worker_ip']
+    server_worker.vm.provision "file",
+      source: config_file['ssh_public_key'],
+      destination: config_file['ssh_authorized_keys']
+
+    server_worker.vm.provision "shell",
+      path: config_file['server_worker_script'],
+      env: {
+      "SERVER_WORKER_IP" => config_file['server_worker_ip'],
+      "K3S_URL" => "https://#{config_file['server_ip']}:#{config_file['kub_port']}"
+      },
+      privileged: true
+  end
+
+end

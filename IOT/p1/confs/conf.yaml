@@ -1,0 +1,16 @@
+local_user: daumis
+ssh_private_key: ~/.ssh/id_rsa
+ssh_public_key: ~/.ssh/id_rsa.pub
+ssh_authorized_keys: /home/vagrant/.ssh/authorized_keys
+vm_provider: virtualbox
+vm_box: bento/debian-12.9
+vm_alloc_mem: 1024
+vm_alloc_cpu: 1
+vm_timeout: 600
+server_ip: 192.168.56.110
+ssh_config: scripts/ssh_config.sh
+ssh_perm: scripts/ssh_perm.sh
+server_script: scripts/server.sh
+server_worker_ip: 192.168.56.111
+server_worker_script: scripts/server_worker.sh
+kub_port: 6443
