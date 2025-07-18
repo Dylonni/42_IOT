@@ -134,7 +134,7 @@ Once everything is set, you can connect to your **Server** Machine (through SSH)
 $ kubectl get nodes -o wide
 ```
 
-You should see all of the nodes connected to your cluster with some info about the them.
+You should see all of the nodes connected to your cluster with some info about them.
 
 ![screenp1](../docs/screenp1.png)
 
