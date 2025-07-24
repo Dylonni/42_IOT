@@ -1,16 +1,14 @@
 # Part1 : K3s & Vagrant
 
 
-![VAGRANT](../docs/vagrant.png)
+![VAGRANT](../docs/p1/vagrant.png)
 
 Let's start with **Vagrant**. It is a tool for automating the creation and configuration of virtual machines. Think about **Terraform** but for local VMs.
 
 It lets developers easily:
 
 - Spin up lightweight, reproducible environments
-
 - Use VirtualBox, VMware, or other providers
-
 - Write the setup in a simple file: Vagrantfile
 
 The setup file is written in Ruby language
@@ -18,6 +16,8 @@ The setup file is written in Ruby language
 Here is an example of a basic Vagrantfile :
 
 ```ruby
+### ------------ Vagrantfile 📄  ------------ ###
+
 Vagrant.configure("2") do |config|
   # Use Ubuntu 22.04 as the base box
   config.vm.box = "ubuntu/jammy64"
@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-You will be able to run that Vagrant file and create a VM provided and configured by virtualbox, by running the command :
+With that Vagrantfile, you will be able to create a VM provided and configured by virtualbox, running on ubuntu. All by running the command :
 ~~~
  $ vagrant up
 ~~~
@@ -60,12 +60,12 @@ It's mostly used when **scalability** is the matter, a basic example would be as
 
 The subject is asking us to use **K3s** , a lightweight version of **K8s**.  
 
-![K3S](../docs/k3s.webp)
+![K3S](../docs/p1/k3sl.webp)
 
-### Difference between Server and a Worker
+### Difference between a Server and a Worker
 
-As said before, the subject wants us to create a Cluster by creating a K3s Server and a K3s Worker on 2 different VMs  
-To put it simply, the **server** is the Brain of the cluster, it will control the cluster and manage the **workers**.   
+As said before, the subject wants us to create a Cluster by creating a K3s **Server** and a K3s **Worker** on 2 different VMs  
+To put it simply, the **Server** is the brain of the cluster, it will control the cluster and manage the **Workers**.   
 Here is a simple respresentation :
 
 ```
@@ -86,11 +86,12 @@ Here is a simple respresentation :
  │   containerd    │            │   containerd    │
  └─────────────────┘            └─────────────────┘
 ```
+The **Workers** contains **Pods**, inside a Pod you will find containers that will host our app parts.  
 
-The Vagrant file is configured to do so and you will find that it is using slightly different configurations script for one and the other.
+Our Vagrant file is configured to follow the subject, it is using slightly different configuration scripts for setting up the **Server** and the **Worker** as shown below :
 
 ```sh 
-#### server.sh
+### ------------ server.sh 📄  ------------ ###
 
 sudo apt-get update && apt-get upgrade -y
 
@@ -104,13 +105,13 @@ cp /var/lib/rancher/k3s/server/node-token /vagrant/token
 
 ```
 - We specify to the installation script that we want this machine to be a K3s **Server** with the **`server`** argument.
-- The **`--flannel-iface`** flag lets us force the usage of the eth1 interface in order to communicate with other pods.
+- The **`--flannel-iface`** flag lets us forcing the usage of the eth1 interface in order to communicate with other pods.
 - We then specify the **Server's** IP address.
 - **`--write-kubeconfig-mode 644`** is used so we can use K3s commands with the user. (here the user is **vagrant**)  
-- The last step is to copy the **token** that K3s generates and place it in ```/vagrant/token``` so it can be used by **Workers**.
+- The last step is to copy the **token** that K3s generates and place it in ```/vagrant/token``` so it can be used by **Workers** upon configuration.
 
 ```sh 
-#### server_worker.sh
+### ------------ server_worker.sh 📄  ------------ ###
 
 sudo apt-get update && apt-get upgrade -y
 
@@ -133,9 +134,11 @@ Once everything is set, you can connect to your **Server** Machine (through SSH)
 ``` sh
 $ kubectl get nodes -o wide
 ```
+**`-o wide`** or **`--output wide`** makes the nodes showing with the IP addresses 
 
-You should see all of the nodes connected to your cluster with some info about them.
+You should see all of the nodes connected to your cluster with some info about them.   
+Here the **Server " daumiss "** and the **Worker " daumissw "** are shown, which means we successfully created and provided two different VMs thanks to **Vagrant**, and we made the cluster as required.
 
-![screenp1](../docs/screenp1.png)
+![screenp1](../docs/p1/screenp1.png)
 
-Now on to **part 2** !!
+### Now on to **part 2** !!
