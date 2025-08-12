@@ -5,13 +5,13 @@ The goal of this part is to have a more detailed understanding of K3s clusters a
 The result should be as follows :
 
 - You are able to host 3 different applications, accessible via different URLs
-- All of the apps are inside **ONE** VM, which means there will be no **Worker** node on that configuration. The **Server** is the cluster.
-- If you don't specify the good host (app**1,2 or 3**.com), app3 will is the default fallback app.  
+- All of the apps are inside **ONE** VM, which means there will be no **Worker** node on that configuration. The **Server** is the **Cluster**.
+- If you don't specify the good host (app**1,2 or 3**.com), app3 is the default fallback app.  
 - App2 has 3 replicas, to ensure load-balancing, scalability and availability.
 - When accessing ***app1.com, app2.com and app3.com***, a "Hello from APP" is showing
 
 > [!IMPORTANT]  
-> Since we don't configure any DNS and use K3s in a dev environment : In order to type app1.com, app2.com or app3.com and access it via your browser, you need to modify the **`/etc/hosts`** file and add these hosts into it. Otherwise, only the IP addresses will be accessible.    
+> Since we don't configure any DNS and use K3s in a dev environment : In order to type app1.com, app2.com or app3.com and access applications via your browser, you first need to modify the **`/etc/hosts`** file and add these hosts into it. Otherwise, only the IP addresses will be accessible from the browser.    
 >To modify the file you need to add "`IP_ADDRESS` `Host.com Host2.com ...`" as the example below.
 
 ![HOSTS](../docs/p2/hosts.png)
@@ -23,7 +23,7 @@ We do the exact same configuration as the part1 for the **Server**: same Vagrant
 Only a small portion of the **`server.sh`** will be modified to include the following
 
 ```sh 
-### ------------ server.sh 📄  ------------ ###
+### ------------ 📄 server.sh  ------------ ###
 
    ## former config [...]
 
@@ -35,23 +35,23 @@ sudo kubectl apply -f /vagrant/confs/ingress.yaml
 This will apply all the settings that we will see just about now. 
 
 > [!TIP]  
-> Because this script will be running via Vagrant provisioning, we won't need to enter inside the VM and apply those changes manually. However if you change anything to your yaml files later on, you **will** need to do so.
+> Because this script will be running via Vagrant provisioning, we won't need to enter inside the VM and apply those changes manually (with kubectl). However if you change anything to your yaml files later on, you **will** need to do so.
 
 ## Ingress, Service And Deployment
 
 This is the core of understanding on how to deploy a functionning cluster.  
-First of all what we should need to keep in mind is that **Pods** and **Containers** are **NOT** initally exposed outside their **Cluster**, which means we can only access them via the cluster itself. **Ingress** will take care of that.
+First of all we should keep in mind that **Pods** and **Containers** are **NOT** initally exposed outside their **Cluster**, which means we can only access them via the cluster itself. **Ingress** will take care of that.
 
 > [!NOTE]  
-> It is also important to keep in mind that **Pod**'s IP Adresses are constantly changing upon adding,removing, rebooting etc.. Which is why K8s is such a powerful tool, with proper setup, 
+> It is also important to keep in mind that **Pod**'s IP Adresses are constantly changing upon adding,removing, rebooting etc.. Which is why K8s is such a powerful tool, with proper setup, every **Pod** is connected and automatically deployed. Thanks to K8s **Self-Healing** Capabilites. 
 
 In order to make everything sticking and working we need to create **Kubernetes Objects** which are the **`Ingress`**, the **`Service`** and the **`Deployment`**.
 
-Let's break down that representation :
+Let's break down the following representation :
 
 ![SCHEMA](../docs/p2/screen3.png)
 
-When the clien (IE : your browser) sends an HTTP request, the **Ingress** will act as a router. It routes the traffic to the appropriate **Service** based on the request's host or path.  
+When the client (IE : your browser) sends an HTTP request, the **Ingress** will act as a router. It will route the traffic to the appropriate **Service** based on the request's host or path.  
 
 The **Service** then forwards the traffic to the correct **Pods**, and also acts as a load balancer between them. This ensures that the traffic is evenly distributed, preventing a single pod from being overloaded.
 
@@ -59,13 +59,13 @@ The **Service** then forwards the traffic to the correct **Pods**, and also acts
 
 > [!NOTE]  
 > **ONE Pod** can handle multiple containers at the same time, and **ONE Service** can handle multiple **Pods** ...  Yeah, there is a reason we call this project "***Inception*** Of Things".   
->But don't worry, for this exercise things will stay simple. As the subject requires you can see that **app2-service** takes 3 Pods in charge to perform **load balancing**.
+>But don't worry, for this exercise things will stay simple. As the subject requires, you can see that **app2-service** takes 3 Pods in charge to perform **load balancing**.
 
 3 files are needed to achieve this result as said earlier, **`ingress.yaml`**, **`service.yaml`** and **`deployment.yaml`** Here are what they look like :
 
 
 ```yaml 
-### ------------ ingress.yaml📄  ------------ ###
+### ------------ 📄 ingress.yaml  ------------ ###
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress # Kubernetes Object type
@@ -89,7 +89,7 @@ spec:
 ```
 
 ```yaml 
-### ------------ services.yaml📄  ------------ ###
+### ------------ 📄 services.yaml  ------------ ###
 
 apiVersion: v1
 kind: Service # Kubernetes Object type
@@ -108,7 +108,7 @@ spec:
 ```
 
 ```yaml 
-### ------------ deployments.yaml📄  ------------ ###
+### ------------ 📄 deployments.yaml  ------------ ###
 
 apiVersion: apps/v1
 kind: Deployment # Kubernetes Object type
@@ -136,7 +136,7 @@ spec:
     [...]
 ```
 
-If everything is configured correctly and applied , you should be able to access your apps by typings their URL on your browser
+If everything is configured correctly and applied, you should be able to access your apps by typing their URL on your browser
 
 ![HELLO1](../docs/p2/hello1.png)
 ![HELLO2](../docs/p2/hello2.png)
@@ -163,11 +163,28 @@ If everything is configured correctly and applied , you should be able to access
               number: 80
 ```
 
-Note that this rule doesnt have the **`host`** tag, cause that's the default one when HTTP requests can't reach valid hostnames. It's managed by app3-service as the subjects asks for. If you want to see that it redirects to app3 you can use curl :
+Note that this rule doesn't have the **`host`** tag, cause that's the default one when HTTP requests can't reach valid hostnames. It's managed by app3-service as the subject asks for. If you want to see how it redirects to app3 you can use curl :
 
 ```
 $ curl -H "Host: watdahell.com" http://192.168.56.110
 ```
+
+This should output the HTML of the app3 inside the console, you can check it with the **`Hello From app3`** 
+```html
+[...]
+ <div id=message>
+    Hello From app3
+  <div>
+[...]
+```
+
+> [!NOTE]  
+> Of course, you will need curl installed if not already
+>```sh 
+  >$ sudo apt update
+  >$ sudo apt upgrade
+  >$ sudo apt install curl
+
 
 This wraps up the part 2, you can see your magnificent cluster wilh everything deployed (and hopefully working) by connecting to your **Server** and use :
 ```

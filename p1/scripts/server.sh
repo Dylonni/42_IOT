@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt-get update && apt-get upgrade -y
+sudo apt-get update && apt-get sudo upgrade -y
 
 curl -sfL https://get.k3s.io | sh -s - server \
   --flannel-iface=eth1 \

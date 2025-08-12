@@ -3,7 +3,7 @@
 
 ![VAGRANT](../docs/p1/vagrant.png)
 
-Let's start with **Vagrant**. It is a tool for automating the creation and configuration of virtual machines. Think about **Terraform** but for local VMs.
+Let's start with **Vagrant**. It is a tool to automate the creation and configuration of virtual machines. Think about **Terraform** but for local VMs.
 
 It lets developers easily:
 
@@ -16,7 +16,7 @@ The setup file is written in Ruby language
 Here is an example of a basic Vagrantfile :
 
 ```ruby
-### ------------ Vagrantfile 📄  ------------ ###
+### ------------ 📄 Vagrantfile  ------------ ###
 
 Vagrant.configure("2") do |config|
   # Use Ubuntu 22.04 as the base box
@@ -47,16 +47,17 @@ With that Vagrantfile, you will be able to create a VM provided and configured b
 ~~~
 
 > [!NOTE]  
-> In this example and throughout the project, we chose **Virtualbox** as our provider for the VMs, therefore we need it installed on our machine before executing the command.
+> In this example and throughout the project, we chose **Virtualbox** as our VM provider, therefore we need it installed on our machine before executing this command.
 
-This part of the project requires two VMs created by Vagrant in order to build a **Kubernetes** cluster with a **Server** and a **Worker Node**
+This part of the project requires two VMs created by Vagrant in order to build a **Kubernetes** cluster with a **Server** and a **Worker** Node
 
 ## Kubernetes
 
-
-**Kubernetes** (often shorten by ***K8s***) is a container orchestration tool that will let you build and manage infrastructures of containers.  
-It's mostly used when **scalability** is the matter, a basic example would be as follows :  
-- You need 1 more container to balance traffic on your app, **Kubernetes** will add that container automatically based on needs, whereas you would need to do it manually if you are using ***docker-compose*** for example.
+**Kubernetes** (often shortened to ***K8s***) is a container orchestration tool that allows you to deploy, manage, and scale container-based infrastructures.  
+It's mostly used when **scalability** is the matter, an example amongst others would be as follows :  
+- If the load on your application increases, Kubernetes can automatically create new pods (copies of your application).
+These additional pods will automatically receive a share of the traffic through the Kubernetes Service, which acts as an internal load balancer.
+With a tool like **Docker Compose**, you would need to manually adjust the number of containers.
 
 The subject is asking us to use **K3s** , a lightweight version of **K8s**.  
 
@@ -91,7 +92,7 @@ The **Workers** contains **Pods**, inside a Pod you will find containers that wi
 Our Vagrant file is configured to follow the subject, it is using slightly different configuration scripts for setting up the **Server** and the **Worker** as shown below :
 
 ```sh 
-### ------------ server.sh 📄  ------------ ###
+### ------------ 📄 server.sh  ------------ ###
 
 sudo apt-get update && apt-get upgrade -y
 
@@ -111,7 +112,7 @@ cp /var/lib/rancher/k3s/server/node-token /vagrant/token
 - The last step is to copy the **token** that K3s generates and place it in ```/vagrant/token``` so it can be used by **Workers** upon configuration.
 
 ```sh 
-### ------------ server_worker.sh 📄  ------------ ###
+### ------------ 📄 server_worker.sh  ------------ ###
 
 sudo apt-get update && apt-get upgrade -y
 
