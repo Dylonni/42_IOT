@@ -16,6 +16,6 @@ echo -e "192.168.56.110 app2.com" | sudo tee -a /etc/hosts
 echo -e "192.168.56.110 app3.com" | sudo tee -a /etc/hosts
 
 # Apply configurations for ingress, deployment and service. all inside ../confs
-sudo kubectl apply -f /vagrant/confs/deployments.yaml
-sudo kubectl apply -f /vagrant/confs/services.yaml
+sudo kubectl apply -f /vagrant/confs/deployment.yaml
+sudo kubectl apply -f /vagrant/confs/service.yaml
 sudo kubectl apply -f /vagrant/confs/ingress.yaml

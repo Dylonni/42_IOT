@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service # Kubernetes resource that exposes a set of Pods as a network service
+metadata:
+  name: app1-service
+spec:
+  selector:
+    app: app1 # Selects the 'app1' Pods labels created by Deployment
+  ports:
+    - name: http # Optional, mainly for readability and for protocols like HTTP/HTTPS in some tools
+      port: 80 # The port on which the Service is exposed inside the cluster
+      targetPort: 8080 # The port on the Pod's container that receives the traffic; usually matches containerPort but doesn't have to
+  type: ClusterIP # Default type; exposes the Service only within the cluster's internal network
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2-service
+spec:
+  selector:
+    app: app2
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app3-service
+spec:
+  selector:
+    app: app3
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

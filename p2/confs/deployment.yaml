@@ -1,20 +1,20 @@
 apiVersion: apps/v1
-kind: Deployment # Kubernetes Object type
+kind: Deployment # The Kubernetes resource type — manages replica sets and pods
 metadata:
   name: app1-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app1 # Defines what Pod to manage
+      app: app1 # Tells the Deployment which Pods to manage (matches pod labels)
   template:
     metadata:
       labels:
-        app: app1 # Label that the deployment and the service will focus on
+        app: app1 # Label assigned to Pods created by this Deployment (must match selector)
     spec:
       containers:
         - name: app1
-          image: paulbouwer/hello-kubernetes:1.10.1 # Hello-Kubernetes image, pulled from dockerhub
+          image: paulbouwer/hello-kubernetes:1.10.1 # Hello-Kubernetes image, pulled from Docker Hub
           env:
             - name: MESSAGE
               value: "Hello from app1." # Custom message to match the exercise

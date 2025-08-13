@@ -27,15 +27,15 @@ Only a small portion of the **`server.sh`** will be modified to include the foll
 
    ## former config [...]
 
-sudo kubectl apply -f /vagrant/confs/deployments.yaml
-sudo kubectl apply -f /vagrant/confs/services.yaml
+sudo kubectl apply -f /vagrant/confs/deployment.yaml
+sudo kubectl apply -f /vagrant/confs/service.yaml
 sudo kubectl apply -f /vagrant/confs/ingress.yaml
 
 ```
 This will apply all the settings that we will see just about now. 
 
 > [!TIP]  
-> Because this script will be running via Vagrant provisioning, we won't need to enter inside the VM and apply those changes manually (with kubectl). However if you change anything to your yaml files later on, you **will** need to do so.
+> Because this script will be running via Vagrant provisioning, we won't need to enter inside the VM and apply those changes manually (with kubectl). However, if you change anything to your yaml files later on, you **will** need to apply those changes manually.
 
 ## Ingress, Service And Deployment
 
@@ -89,7 +89,7 @@ spec:
 ```
 
 ```yaml 
-### ------------ 📄 services.yaml  ------------ ###
+### ------------ 📄 service.yaml  ------------ ###
 
 apiVersion: v1
 kind: Service # Kubernetes Object type
@@ -108,7 +108,7 @@ spec:
 ```
 
 ```yaml 
-### ------------ 📄 deployments.yaml  ------------ ###
+### ------------ 📄 deployment.yaml  ------------ ###
 
 apiVersion: apps/v1
 kind: Deployment # Kubernetes Object type
@@ -148,7 +148,7 @@ If everything is configured correctly and applied, you should be able to access 
 
 
 ```yaml 
-### ------------ services.yaml📄  ------------ ###
+### ------------ 📄 service.yaml ------------ ###
 
     [...]
 
@@ -172,21 +172,21 @@ $ curl -H "Host: watdahell.com" http://192.168.56.110
 This should output the HTML of the app3 inside the console, you can check it with the **`Hello From app3`** 
 ```html
 [...]
- <div id=message>
+ <div id="message">
     Hello From app3
   <div>
 [...]
 ```
 
 > [!NOTE]  
-> Of course, you will need curl installed if not already
+> Of course, you will need curl installed on your machine if not already
 >```sh 
   >$ sudo apt update
   >$ sudo apt upgrade
   >$ sudo apt install curl
 
 
-This wraps up the part 2, you can see your magnificent cluster wilh everything deployed (and hopefully working) by connecting to your **Server** and use :
+This wraps up the part 2, you can see your magnificent cluster with everything deployed (and hopefully working) by connecting to your **Server** and use :
 ```
 $ kubectl get all
 ```
