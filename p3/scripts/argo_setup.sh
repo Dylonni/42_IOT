@@ -51,17 +51,13 @@ fi
 
 # Login to ArgoCD and update password (if not already set)
 
-# Expose ArgoCD using NodePort if not already exposed
-echo "Ensuring ArgoCD is exposed with NodePort..."
-    kubectl patch svc argocd-server -n "$NAMESPACE_ARGOCD" \
-      -p '{"spec": {"type": "NodePort", "ports": [{"port": 443, "targetPort": 8080, "nodePort": 30080}]}}' \
-      --type merge || echo "ArgoCD service is already NodePort."
-echo "✅ ArgoCD service patched to NodePort."
-sleep 5 # Wait for service to be ready
+# ArgoCD portforwarding to access GUI
+echo "ArgoCD portforwarding to access GUI .."
+kubectl port-forward -n "$NAMESPACE_ARGOCD" svc/argocd-server 8080:443 &
+sleep 10 # Wait for service to be ready
 
 # Get machine IP and login to ArgoCD
-ARGOCD_URL="$(hostname -I | awk '{print $1}'):30080"
-
+ARGOCD_URL="localhost:8080"
 
 echo "--------------- Logging into ArgoCD ... ---------------"
 # Fetch password
@@ -93,12 +89,19 @@ fi
 # Apply YAML manifests
 
 echo "--------------- Applying YAML files... ---------------"
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-kubectl apply -f "$BASE_DIR/confs/argo-app.yaml"
+ARGO_APP_YAML="$(realpath "$(dirname "$0")/../confs/argo-app.yaml")"
+
+# Vérifie que le fichier existe avant de l'appliquer
+if [ -f "$ARGO_APP_YAML" ]; then
+    echo "--------------- Applying YAML files... ---------------"
+    kubectl apply -f "$ARGO_APP_YAML"
+else
+    echo "❌ File not found: $ARGO_APP_YAML"
+fi
 
 echo -e "✅ Setup Complete\n\n\n"
 echo -e "${GREEN}=============================================${NC}"
-echo -e "${CYAN}${BOLD} ArgoCD is running at: $ARGOCD_URL ${NC}"
+echo -e "${CYAN}${BOLD} ArgoCD is running at: https://$ARGOCD_URL ${NC}"
 echo -e "${CYAN} Username:${NC} admin"
-echo -e "${CYAN} Password:${NC} $ARGOCD_PWD"
+echo -e "${CYAN} Password:${NC} $ARGOCD_NEW_PWD"
 echo -e "${GREEN}=============================================${NC}"
