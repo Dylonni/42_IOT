@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Dylonni/iot-daumis-conf.git  # Can point to either a Helm chart repo or a git repo.
     targetRevision: HEAD  # Gets the main branch
-    path: v1
+    path: wil
   destination:
     server: https://kubernetes.default.svc # cluster API URL
     namespace: dev # If namespaces are omitted inside deployment and service files, this will ensure that it's deployed inside the 'dev' namespace 

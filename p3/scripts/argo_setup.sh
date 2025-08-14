@@ -45,16 +45,17 @@ if ! command -v argocd &> /dev/null; then
     curl -sSL -o argocd-linux-amd64 "https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64"
     chmod +x argocd-linux-amd64
     sudo mv argocd-linux-amd64 /usr/local/bin/argocd
+    echo "✅ ArgoCD CLI successfully installed."
 else
     echo "ArgoCD CLI already installed."
 fi
 
 # Login to ArgoCD and update password (if not already set)
 
-# ArgoCD portforwarding to access GUI
-echo "ArgoCD portforwarding to access GUI .."
+echo "ArgoCD portforwarding ..."
 kubectl port-forward -n "$NAMESPACE_ARGOCD" svc/argocd-server 8080:443 &
 sleep 10 # Wait for service to be ready
+echo "✅ Portforwarding complete."
 
 # Get machine IP and login to ArgoCD
 ARGOCD_URL="localhost:8080"
@@ -86,9 +87,7 @@ else
     echo "Namespace '$NAMESPACE_DEV' already exists."
 fi
 
-# Apply YAML manifests
-
-echo "--------------- Applying YAML files... ---------------"
+# Apply YAML manifest
 ARGO_APP_YAML="$(realpath "$(dirname "$0")/../confs/argo-app.yaml")"
 
 # Vérifie que le fichier existe avant de l'appliquer
@@ -99,9 +98,9 @@ else
     echo "❌ File not found: $ARGO_APP_YAML"
 fi
 
-echo -e "✅ Setup Complete\n\n\n"
-echo -e "${GREEN}=============================================${NC}"
-echo -e "${CYAN}${BOLD} ArgoCD is running at: https://$ARGOCD_URL ${NC}"
-echo -e "${CYAN} Username:${NC} admin"
-echo -e "${CYAN} Password:${NC} $ARGOCD_NEW_PWD"
-echo -e "${GREEN}=============================================${NC}"
+echo "\n\n\n            ✅ Setup Complete\n\n\n"
+echo "${GREEN}=============================================${NC}"
+echo "${CYAN}${BOLD} ArgoCD is running at: https://$ARGOCD_URL ${NC}"
+echo "${CYAN} Username:${NC} admin"
+echo "${CYAN} Password:${NC} $ARGOCD_NEW_PWD"
+echo "${GREEN}=============================================${NC}"
