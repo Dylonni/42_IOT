@@ -1,10 +1,14 @@
 #!/bin/bash
-set -euo pipefail
+set -eu
 
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
 NAMESPACE_ARGOCD="argocd"
 NAMESPACE_DEV="dev"
-CLUSTER_NAME="p3_cluster"
-ARGO_NEW_PWD="daumis123"
+CLUSTER_NAME="p3-cluster"
+ARGOCD_NEW_PWD="daumis123"
 
 # Create k3d cluster (only if missing)
 
@@ -47,36 +51,31 @@ fi
 
 # Login to ArgoCD and update password (if not already set)
 
-echo "--------------- Checking ArgoCD password... ---------------"
-CURRENT_PWD=$(kubectl -n "$NAMESPACE_ARGOCD" get secret argocd-initial-admin-secret \
-    -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "")
-
 # Expose ArgoCD using NodePort if not already exposed
 echo "Ensuring ArgoCD is exposed with NodePort..."
-CURRENT_TYPE=$(kubectl get svc argocd-server -n "$NAMESPACE_ARGOCD" -o jsonpath='{.spec.type}' 2>/dev/null || echo "")
-
-if [ "$CURRENT_TYPE" != "NodePort" ]; then
     kubectl patch svc argocd-server -n "$NAMESPACE_ARGOCD" \
-      -p '{"spec": {"type": "NodePort", "ports": [{"port": 443, "targetPort": 8080, "nodePort": 30080}]}}'
-    echo "ArgoCD service patched to NodePort."
-else
-    echo "ArgoCD service is already NodePort."
-fi
-
-# Wait for service to be ready
-sleep 5
+      -p '{"spec": {"type": "NodePort", "ports": [{"port": 443, "targetPort": 8080, "nodePort": 30080}]}}' \
+      --type merge || echo "ArgoCD service is already NodePort."
+echo "✅ ArgoCD service patched to NodePort."
+sleep 5 # Wait for service to be ready
 
 # Get machine IP and login to ArgoCD
-ARGOCD_URL="https://$(hostname -I | awk '{print $1}'):30080"
-argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_PWD" --insecure
 
-# Change password only if not already set
-if ! argocd account get-user-info --server "$ARGOCD_URL" --insecure 2>&1 | grep -q "admin123"; then
-    argocd account update-password --account admin \
-      --current-password "$ARGOCD_PWD" --new-password "admin123"
-    echo "ArgoCD password updated."
+ARGOCD_URL="https://$(hostname -I | awk '{print $1}'):30080"
+echo "--------------- Logging into ArgoCD ... ---------------"
+ARGOCD_PWD=$(kubectl -n "$NAMESPACE_ARGOCD" get secret argocd-initial-admin-secret \
+    -o jsonpath="{.data.password}" | base64 -d)
+if argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_NEW_PWD" --insecure &>/dev/null; then
+    echo "ArgoCD password already set to $ARGOCD_NEW_PWD."
 else
-    echo "ArgoCD password already set to admin123."
+    echo "Updating ArgoCD password..."
+    # Login with the initial password
+    argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_PWD" --insecure
+    # Update to the new password
+    argocd account update-password --account admin \
+        --current-password "$ARGOCD_PWD" \
+        --new-password "$ARGOCD_NEW_PWD"
+    echo "✅ ArgoCD password updated."
 fi
 
 # Create dev namespace
@@ -92,8 +91,11 @@ fi
 
 echo "--------------- Applying YAML files... ---------------"
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-kubectl apply -f "$BASE_DIR/conf/deployment.yaml"
-kubectl apply -f "$BASE_DIR/conf/service.yaml"
-kubectl apply -f "$BASE_DIR/conf/argo-application.yaml"
+kubectl apply -f "$BASE_DIR/conf/argo-app.yaml"
 
-echo "✅ Everything is setup! Success!"
+echo -e "✅ Setup Complete\n\n\n"
+echo -e "${GREEN}=============================================${NC}"
+echo -e "${CYAN}${BOLD} ArgoCD is running at: $ARGOCD_URL ${NC}"
+echo -e "${CYAN} Username:${NC} admin"
+echo -e "${CYAN} Password:${NC} $ARGOCD_PWD"
+echo -e "${GREEN}=============================================${NC}"

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-instance
+  namespace: argocd # You'll usually want to add your resources to the argocd namespace
+spec:
+  project: default   # The project the application belongs to
+  source:
+    repoURL: https://github.com/Dylonni/iot-daumis-conf.git  # Can point to either a Helm chart repo or a git repo.
+    targetRevision: HEAD  # Gets the main branch
+    path: v1
+  destination:
+    server: https://kubernetes.default.svc # cluster API URL
+    namespace: dev # If namespaces are omitted inside deployment and service files, this will ensure that it's deployed inside the 'dev' namespace 
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
