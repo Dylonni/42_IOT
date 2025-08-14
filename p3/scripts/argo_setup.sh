@@ -60,14 +60,15 @@ echo "✅ ArgoCD service patched to NodePort."
 sleep 5 # Wait for service to be ready
 
 # Get machine IP and login to ArgoCD
+ARGOCD_URL="$(hostname -I | awk '{print $1}'):30080"
 
-ARGOCD_URL="https://$(hostname -I | awk '{print $1}'):30080"
+
 echo "--------------- Logging into ArgoCD ... ---------------"
+# Fetch password
 ARGOCD_PWD=$(kubectl -n "$NAMESPACE_ARGOCD" get secret argocd-initial-admin-secret \
     -o jsonpath="{.data.password}" | base64 -d)
-if argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_NEW_PWD" --insecure &>/dev/null; then
-    echo "ArgoCD password already set to $ARGOCD_NEW_PWD."
-else
+
+if ! argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_NEW_PWD" --insecure &>/dev/null; then
     echo "Updating ArgoCD password..."
     # Login with the initial password
     argocd login "$ARGOCD_URL" --username admin --password "$ARGOCD_PWD" --insecure
@@ -76,6 +77,8 @@ else
         --current-password "$ARGOCD_PWD" \
         --new-password "$ARGOCD_NEW_PWD"
     echo "✅ ArgoCD password updated."
+else
+    echo "ArgoCD password already set to $ARGOCD_NEW_PWD."
 fi
 
 # Create dev namespace
@@ -91,7 +94,7 @@ fi
 
 echo "--------------- Applying YAML files... ---------------"
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-kubectl apply -f "$BASE_DIR/conf/argo-app.yaml"
+kubectl apply -f "$BASE_DIR/confs/argo-app.yaml"
 
 echo -e "✅ Setup Complete\n\n\n"
 echo -e "${GREEN}=============================================${NC}"
