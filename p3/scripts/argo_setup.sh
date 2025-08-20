@@ -94,6 +94,8 @@ ARGO_APP_YAML="$(realpath "$(dirname "$0")/../confs/argo-app.yaml")"
 if [ -f "$ARGO_APP_YAML" ]; then
     echo "--------------- Applying YAML files... ---------------"
     kubectl apply -f "$ARGO_APP_YAML"
+    sleep 10
+    kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 &
 else
     echo "❌ File not found: $ARGO_APP_YAML"
 fi
