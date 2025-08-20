@@ -51,23 +51,6 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = server_user
     server.vm.network "private_network", ip: config_file['server_ip']
 
-  # Provisioning the VM with a script, the script is running with root privileges
-  # Creating folders that will recieve the host public key
-    server.vm.provision "shell",
-      path: config_file['ssh_config'],
-      privileged: true
-
-  # Provisioning the VM with a file, the created SSH key on the host machine will be transfered to the VM authorized keys
-  # in order to connect via SSH without any password prompt
-    server.vm.provision "file",
-      source: config_file['ssh_public_key'],
-      destination: config_file['ssh_authorized_keys']
-
-  # Provisioning the VM with a script, grants the folders and key access to the user 'vagrant'
-    server.vm.provision "shell",
-      path: config_file['ssh_perm'],
-      privileged: true
-
   # Provisioning the VM with a script, installing and configuring K3S for the server
     server.vm.provision "shell",
       path: config_file['server_script'], env: {
@@ -81,10 +64,6 @@ Vagrant.configure("2") do |config|
     server_worker.vm.box = config_file['vm_box']
     server_worker.vm.hostname = server_worker_user
     server_worker.vm.network "private_network", ip: config_file['server_worker_ip']
-    server_worker.vm.provision "file",
-      source: config_file['ssh_public_key'],
-      destination: config_file['ssh_authorized_keys']
-
     server_worker.vm.provision "shell",
       path: config_file['server_worker_script'],
       env: {
