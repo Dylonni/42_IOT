@@ -19,7 +19,7 @@ Although there are multiple tools that can be used for Continuous Delivery, we w
 
 ## How does it work, what does it do ?
 
-ArgoCD is a tool that will let you monitor your **Kubernetes Cluster**. You will be able to see what app is runnin inside your cluster, how many pods/services you have, their sync status, etc..  
+ArgoCD is a tool that will let you monitor your **Kubernetes Cluster**. You will be able to see what app is running inside your cluster, how many pods/services you have, their sync status, etc..  
 
 Not only that, it will also serve as an automated deployment tool. The idea is that you only need to modify your Git repository in order to make changes to your app. ArgoCD will **watch** on that repository and automatically change your app depending on what's inside the Git repo, it's called a **source of truth** and ArgoCD takes Git as it's source of truth.  
 
