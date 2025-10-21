@@ -101,7 +101,9 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 - **If you modify files locally (without changing files on Git)** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
 > [!CAUTION]
 > You can "force" the sync inside the ArgoCD interface, and it might show that it is **Synced**.  
+>
 > **HOWEVER** this is not really the case, as ArgoCD doesn't modify Git files on it's own, you might end up having 2 different configurations of your app without knowing which is the real one, creating a **misalignment** problem.  
+>
 >It's important to modify Git files and not doing things locally, or if you do, ensure that you commit those changes on your Git repo. (even if it kind of defeats the point of using ArgoCD).
 
 - **If you modify files on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app again and everything turns normal (the changes will be the ones you have made on your Git).  
