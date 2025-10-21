@@ -102,7 +102,7 @@ By default, **`selfHeal`** is set to **`false`**. When set to false, ArgoCD will
   1. Modify the Git repository to match your changes, or
   2. Click the **Sync** button in the ArgoCD UI to apply the state from Git to the cluster, overwriting the local changes.
 
-> **Caution**  
+>[!CAUTION]  
 > Although you can "force" a sync via the ArgoCD interface, this will only make the cluster conform to the state in Git. The cluster's current state will be restored to match the repository, which might not reflect the changes you made manually.
 
 - **If you modify resources in Git** (e.g., pushing a commit), ArgoCD will detect that the cluster is **OutOfSync** with Git.  
