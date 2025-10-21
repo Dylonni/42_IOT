@@ -32,20 +32,20 @@ $ kubectl apply -f deployment.yaml
 ```
 
 **With ArgoCD** :  
-- You change your **`deployment.yaml`** file inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave this way, more on that later...)  
+- You change your **`deployment.yaml`** file inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave that way, more on that later...)  
 
-ArgoCD can also be useful for rollback purposes. As every versions of your app are on Git, you can revert to a certain version of your repo and ArgoCD will sync everything from that version automatically !  
+ArgoCD can also be useful for rollback purposes. As every versions of your app are on your Git, you can revert to a certain version of your repo and ArgoCD will sync everything from that version automatically !  
 
-Let's install it on our project !
+Sounds cool ? Let's install it for our project ! (You don't have the choice anyway)
 
 
 ## Installation Scripts
 
-### Prerequisites. 
+### Prerequisites  
 
-In order to complete this part , you will have to install some few prerequisites :
+In order to complete this part, you will have to install some few prerequisites :
 
-- Docker (So k3d can run correctly)
+- Docker (So k3d can run)
 - K3d
 - kubectl (Because it's not included inside k3d)
 
@@ -53,9 +53,9 @@ You will find the script to install those inside the **`p3/scripts/prerequisites
 
 I will not go through this file because it's quite self explanatory and i wrote some comments inside it for guidance.  
 
-### The Argo App
+### The Argo-App yaml
 
-Before setting up ArgoCD, let's quick review **`p3/confs/argo-app.yaml`** as you will need it before launching the **`argo_setup.sh`** script. 
+Before setting up ArgoCD, let's quick review **`p3/confs/argo-app.yaml`**. As **`argo_setup.sh`** needs it upon installation. 
 
 ```yaml
 ### ------------ 📄 argo-app.yaml  ------------ ###
