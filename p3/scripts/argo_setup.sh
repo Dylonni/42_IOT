@@ -90,7 +90,7 @@ fi
 # Apply YAML manifest
 ARGO_APP_YAML="$(realpath "$(dirname "$0")/../confs/argo-app.yaml")"
 
-# Vérifie que le fichier existe avant de l'appliquer
+# Verifies that files odes exist before apply
 if [ -f "$ARGO_APP_YAML" ]; then
     echo "--------------- Applying YAML files... ---------------"
     kubectl apply -f "$ARGO_APP_YAML"
