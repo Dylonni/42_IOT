@@ -106,13 +106,13 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 >
 >It's important to modify Git files and not doing things locally, or if you do, ensure that you commit those changes on your Git repo. (even if it kind of defeats the point of using ArgoCD).
 
-- **If you modify files on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app again and everything turns normal (the changes will be the ones you have made on your Git).  
+- **If you modify files on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app and everything turns **Synced** (the changes will be the ones you have made inside your Git).  
 
 ####  selfHeal : true
 
 - **If you modify files locally and apply changes** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.  
 
-- **If you modify files on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made on your Git).  
+- **If you modify files on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made inside your Git).  
 
 ### About Namespaces
 
