@@ -99,8 +99,8 @@ By default, **`selfHeal`** is set to **`false`**. When set to false, ArgoCD will
 
 - **If you modify resources directly in the cluster** (e.g., using `kubectl edit` or `kubectl apply`), ArgoCD will detect that the cluster is **OutOfSync** with the Git repository.  
   To get things back in sync, you will need to either:
-  1. Modify the Git repository to match your changes, or
-  2. Click the **Sync** button in the ArgoCD UI to apply the state from Git to the cluster, overwriting the local changes.
+   - Modify the Git repository to match your changes, or
+   - Click the **Sync** button in the ArgoCD UI to apply the state from Git to the cluster, overwriting the local changes.
 
 >[!CAUTION]  
 > Although you can "force" a sync via the ArgoCD interface, this will only make the cluster conform to the state in Git. The cluster's current state will be restored to match the repository, which might not reflect the changes you made manually.
