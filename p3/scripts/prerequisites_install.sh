@@ -47,7 +47,7 @@ fi
 
 # k3d installation
 if ! command -v k3d &> /dev/null; then
-    echo "--------------- Installing dk3d ... ---------------"
+    echo "--------------- Installing k3d ... ---------------"
     curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 else
     echo "k3d is already installed"
@@ -55,7 +55,7 @@ fi
 
 # kubectl installation
 if ! command -v kubectl &> /dev/null; then
-    echo "--------------- Installing dkubectl ... ---------------"
+    echo "--------------- Installing kubectl ... ---------------"
     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod +x kubectl
     sudo mv kubectl /usr/local/bin/
