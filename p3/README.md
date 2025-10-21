@@ -20,16 +20,21 @@ Although there are multiple tools that can be used for Continuous Delivery, we w
 ## How does it work, what does it do ?
 
 ArgoCD is a tool that will let you monitor your **Kubernetes Cluster**. You will be able to see what app is runnin inside your cluster, how many pods/services you have, their sync status, etc..  
-Not only that, it will also serve as an automated deployment tool, the idea is that you only need to modify a Git repository in order to make changes to your app. ArgoCD will **watch** on that repository and automatically change your app depending on what's inside the Git repo, it's called a **source of truth** and ArgoCD takes Git as it's source of truth.  
+
+Not only that, it will also serve as an automated deployment tool. The idea is that you only need to modify your Git repository in order to make changes to your app. ArgoCD will **watch** on that repository and automatically change your app depending on what's inside the Git repo, it's called a **source of truth** and ArgoCD takes Git as it's source of truth.  
 
 Let's say you want to have more replicas of an existing **Pod** for example.  
+
 **Without ArgoCD** :  
-- You would need to go inside your **`deployment.yaml`** file -> edit the numbers of replicas -> apply those changes with `kubectl apply -f deployment.yaml`.
+- You would need to go inside your **`deployment.yaml`** file -> edit the numbers of replicas -> apply those changes with
+```
+$ kubectl apply -f deployment.yaml
+```
 
 **With ArgoCD** :  
 - You change your **`deployment.yaml`** file inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave this way, more on that later...)  
 
-This can also be useful for rollback purposes. As every versions of your app are in Git, you only need to revert to a certain version and ArgoCD will sync everything from that version automatically !  
+ArgoCD can also be useful for rollback purposes. As every versions of your app are on Git, you can revert to a certain version of your repo and ArgoCD will sync everything from that version automatically !  
 
 Let's install it on our project !
 
@@ -46,7 +51,7 @@ In order to complete this part , you will have to install some few prerequisites
 
 You will find the script to install these inside the **`p3/scripts/prerequisites_install.sh`** folder.  
 
-I will not go through this file because it's quite self explanatory and i put some comments for guidance.  
+I will not go through this file because it's quite self explanatory and i put some comments inside it for guidance.  
 
 ### The Argo App
 
@@ -76,37 +81,42 @@ spec:
 
 ```
 
-This file ressembles **`deployment.yaml`**, **`service.yaml`** and/or **`ingress.yaml`** files. But there are some tags that needs further explanation.  
+Here are some tags that needs further explanation.  
 
 - **`repoURL`** : the github repository that ArgoCD will watch on. 
 - **`targetRevision`** : the specific branch to watch on.
-- **`path`** : the specific folder inside the repo to watch on. 
-- **`server`** : where the apps runs (by default it's the kubernetes 'local' cluster, the one where argocd runs). 
+- **`path`** : the specific folder inside the repo to watch on (if there is). 
+- **`server`** : where the apps runs (by default it's the kubernetes 'local' cluster, the one where ArgoCD runs). 
 - **`syncPolicy:automated:prune`** : deletes ressources that are not inside the Git repo anymore. 
 
-## About selfHealing
+### About selfHealing
 
 This tag will define how your ArgoCD will react to changes.  
 By default it is set to **`false`**, if you let it that way, ArgoCD will not do anything automatically.  
 
 Let's say you want to edit the number of replicas for one of your **Pods** :
 
-###  selfHeal : false
+####  selfHeal : false
 
-- **If you modify locally (without changing files on Git)** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
+- **If you modify files locally (without changing files on Git)** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
 > [!CAUTION]
-> You can "force" the sync inside the ArgoCD interface, and it might show that it is **Synced**. **HOWEVER** this is not really the case, as ArgoCD doesn't modify Git files on it's own, you might end up having 2 different configurations of your app without knowing which is the real one, creating a **misalignment** problem. It's important to modify Git files and not doing things locally, or if you do, ensure that you commit those changes on your Git repo. (even if it kind of defeats the point of using ArgoCD).
+> You can "force" the sync inside the ArgoCD interface, and it might show that it is **Synced**.  
+> **HOWEVER** this is not really the case, as ArgoCD doesn't modify Git files on it's own, you might end up having 2 different configurations of your app without knowing which is the real one, creating a **misalignment** problem.  
+>It's important to modify Git files and not doing things locally, or if you do, ensure that you commit those changes on your Git repo. (even if it kind of defeats the point of using ArgoCD).
 
-- **If you modify on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app again and everything turns normal (the changes will be the ones you have made on your Git).  
+- **If you modify files on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app again and everything turns normal (the changes will be the ones you have made on your Git).  
 
-###  selfHeal : true
+####  selfHeal : true
 
-- **If you modify locally (without changing files on Git)** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.
-- **If you modify on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made on your Git).  
+- **If you modify files locally (without changing files on Git)** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.  
 
-## About Namespaces
+- **If you modify files on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made on your Git).  
 
-A Namespace is a logical way to isolate and organize ressources, in this project we are required to create one namespace for ArgoCD (named "argocd") in which argocd will run in, and one for the development of the app (named "dev"). Every **Pod** in **dev** will not be able to communicate with a **Pod** in the **argocd** namespace for example.  
+### About Namespaces
+
+A Namespace is a logical way to isolate and organize ressources, in this project we are required to create one namespace for ArgoCD (named "argocd") in which argocd will run in, and one for the development of the app (named "dev").  
+
+Every **Pod** in **dev** will not be able to communicate with a **Pod** in the **argocd** namespace for example.  
 
 Here is a little schema about what it looks like:  
 ![NAMESPACES](../docs/p3/namespaces.png)  
@@ -116,7 +126,7 @@ Here is a little schema about what it looks like:
 > [!IMPORTANT]
 > Before running the setup script, you should modify the **`argo-app.yaml`** file. Make it watch your own freshly created repository (and not mine since you can't commit anything to it).
 
-Since the point of ArgoCD is using Git to make changes to your apps, your **`deployment.yaml`** and **`service.yaml`** files will be located in a remote git repository and no more locally. (We don't use ingress there because we are not routing traffic).  
+As said, the point of ArgoCD is using Git to make changes to your apps, your **`deployment.yaml`** and **`service.yaml`** files will be located in a remote git repository and no more locally. (We don't use ingress there because we are not routing traffic).  
 
 Your repo should look like this:  
 
@@ -130,12 +140,16 @@ Again, the script is self explanatory and comments are there to explain further.
 
 > [!IMPORTANT]
 > At some point, this script will try to port forward the service : **`wil-service`**.
-```sh 
-(line 105) 
-kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 & 
-
-```
-> if the service doesn't exist inside your remote repo, the port forwarding will fail and you will not be able to access your app from your browser nor curl it. You either have to set **`wil-service`** in your **`service.yaml`** file on Git, or replace **`wil-service`** inside the **`p3/scripts/argo_setup.sh`** file with whatever your service name is on Git.  
+>```sh 
+> [...]
+>
+>(line 105) 
+>kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 &
+> 
+> [...]
+>```
+> if the service doesn't exist inside your remote repo, the port forwarding will fail and you will not be able to access your app from your browser nor curl it.
+>You either have to set **`wil-service`** in your **`service.yaml`** file on Git, or replace '**`wil-service`**' inside the **`p3/scripts/argo_setup.sh`** file with whatever your service name is on Git.  
 
 > [!TIP]
 > These scripts need to be ran in your host machine, not inside another VM that you have to make with **Vagrant** as for the previous parts. Because the whole point is to make ArgoCD and your cluster run inside a **Docker Container**, that's why we use **K3d**.  
@@ -152,11 +166,13 @@ If you want to test it, here is a simple test that you can apply :
 - Inside **`deployment.yaml`**, modify **`wil42/playground:v2`** to **`wil42/playground:v1`** or vice versa.
 - Refresh your ArgoCD page. 
 
-You should see old pods getting destroyed (thanks to prune : true) and ArgoCD deploying your new apps with the correct image (v1 or v2) !  
+You should see old pods getting destroyed (thanks to prune : true) and ArgoCD deploying and syncing with your new app (taking v1 or v2 images) !  
 
 You can also check these changes with **curl**:  
+
 **Before changes on Git** :  
 ![CURLONE](../docs/p3/curl1.png).  
+
 **After changes on Git** :  
 ![CURLTWO](../docs/p3/curl2.png)  
 
