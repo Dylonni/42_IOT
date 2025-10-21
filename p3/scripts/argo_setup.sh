@@ -92,13 +92,25 @@ ARGO_APP_YAML="$(realpath "$(dirname "$0")/../confs/argo-app.yaml")"
 
 # Verifies that files odes exist before apply
 if [ -f "$ARGO_APP_YAML" ]; then
-    echo "--------------- Applying YAML files... ---------------"
+    echo "Applying YAML files..."
     kubectl apply -f "$ARGO_APP_YAML"
-    sleep 10
-    kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 &
+
+    # Wait for the app to be ready, healthy qnd deployed
+    echo "Waiting for ArgoCD to sync and deploy..."
+    argocd app wait argo-instance --health --timeout 300
+
+    # Verifies that service exists
+    if kubectl get svc/wil-service -n "$NAMESPACE_DEV" &>/dev/null; then
+        echo "Service 'wil-service' is ready. Starting port-forward..."
+        kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 &
+    else
+        echo "❌ Service 'wil-service' not found. Check ArgoCD status:"
+        argocd app get argo-instance
+    fi
 else
     echo "❌ File not found: $ARGO_APP_YAML"
 fi
+
 
 echo "\n\n\n            ✅ Setup Complete\n\n\n"
 echo "${GREEN}=============================================${NC}"
