@@ -116,7 +116,7 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 
 ### About Namespaces
 
-A Namespace is a logical way to isolate and organize ressources, in this project we are required to create one namespace for ArgoCD (named "argocd") in which argocd will run in, and one for the development of the app (named "dev").  
+A Namespace is a logical way to isolate and organize ressources, in this project we are required to create one namespace for ArgoCD (named "argocd") in which argocd will run, and another for the development of the app (named "dev").  
 
 Every **Pod** in **dev** will not be able to communicate with a **Pod** in the **argocd** namespace for example.  
 
