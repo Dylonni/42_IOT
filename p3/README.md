@@ -32,7 +32,7 @@ $ kubectl apply -f deployment.yaml
 ```
 
 **With ArgoCD** :  
-- You change your **`deployment.yaml`** file inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave that way, more on that later...)  
+- You change your **`deployment.yaml`** by committing to your Git (or manually) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave that way, more on that later...)  
 
 ArgoCD can also be useful for rollback purposes. As every versions of your app are on your Git, you can revert to a certain version of your repo and ArgoCD will sync everything from that version automatically !  
 
