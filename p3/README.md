@@ -49,9 +49,9 @@ In order to complete this part , you will have to install some few prerequisites
 - K3d
 - kubectl (Because it's not included inside k3d)
 
-You will find the script to install these inside the **`p3/scripts/prerequisites_install.sh`** folder.  
+You will find the script to install those inside the **`p3/scripts/prerequisites_install.sh`** folder.  
 
-I will not go through this file because it's quite self explanatory and i put some comments inside it for guidance.  
+I will not go through this file because it's quite self explanatory and i wrote some comments inside it for guidance.  
 
 ### The Argo App
 
