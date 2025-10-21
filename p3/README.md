@@ -123,7 +123,8 @@ By default, **`selfHeal`** is set to **`false`**. When set to false, ArgoCD will
 | Modify resources in the cluster (e.g., `kubectl`) | ArgoCD marks the app **OutOfSync**, you must manually click **Sync** to apply the Git state. | ArgoCD automatically reverts changes and reconciles the cluster to match Git. |
 | Modify resources in Git (e.g., commit and push) | ArgoCD marks the app **OutOfSync**, you must manually click **Sync** to apply the Git changes. | ArgoCD automatically applies the changes from Git to the cluster after a short delay. |
 
-> **Note**: It’s best to make changes in Git rather than modifying resources directly in the cluster. Manual changes in the cluster can create discrepancies between the state defined in Git and the actual state in the cluster, which may lead to misalignment issues.
+> [!NOTE]
+> It’s best to make changes in Git rather than modifying resources directly in the cluster. Manual changes in the cluster can create discrepancies between the state defined in Git and the actual state in the cluster, which may lead to misalignment issues.
 
 
 ### About Namespaces
