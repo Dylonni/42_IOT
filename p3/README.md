@@ -26,7 +26,7 @@ Not only that, it will also serve as an automated deployment tool. The idea is t
 Let's say you want to have more replicas of an existing **Pod** for example.  
 
 **Without ArgoCD** :  
-- You would need to go inside your **`deployment.yaml`** file -> edit the numbers of replicas -> apply those changes with
+- You would need to go inside your **`deployment.yaml`** file -> edit the numbers of replicas -> apply those changes in your terminal with :
 ```
 $ kubectl apply -f deployment.yaml
 ```
