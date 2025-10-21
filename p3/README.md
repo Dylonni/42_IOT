@@ -27,16 +27,16 @@ Let's say you want to have more replicas of an existing **Pod** for example.
 - You would need to go inside your **`deployment.yaml`** file -> edit the numbers of replicas -> apply those changes with `kubectl apply -f deployment.yaml`.
 
 **With ArgoCD** :  
-- You change your deployment.yaml settings inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave this way, more on that later...)  
+- You change your **`deployment.yaml`** file inside your Git repo manually (or by commit) -> ArgoCD **sees** that difference and automatically syncs your app. (if you actually set it to behave this way, more on that later...)  
 
 This can also be useful for rollback purposes. As every versions of your app are in Git, you only need to revert to a certain version and ArgoCD will sync everything from that version automatically !  
 
 Let's install it on our project !
 
 
-### Installation Scripts
+## Installation Scripts
 
-## Prerequisites. 
+### Prerequisites. 
 
 In order to complete this part , you will have to install some few prerequisites :
 
@@ -48,7 +48,7 @@ You will find the script to install these inside the **`p3/scripts/prerequisites
 
 I will not go through this file because it's quite self explanatory and i put some comments for guidance.  
 
-## The Argo App
+### The Argo App
 
 Before setting up ArgoCD, let's quick review **`p3/confs/argo-app.yaml`** as you will need it before launching the **`argo_setup.sh`** script. 
 
@@ -91,7 +91,7 @@ By default it is set to **`false`**, if you let it that way, ArgoCD will not do 
 
 Let's say you want to edit the number of replicas for one of your **Pods** :
 
-#  selfHeal : false
+###  selfHeal : false
 
 - **If you modify locally (without changing files on Git)** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
 > [!CAUTION]
@@ -99,7 +99,7 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 
 - **If you modify on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app again and everything turns normal (the changes will be the ones you have made on your Git).  
 
-#  selfHeal : true
+###  selfHeal : true
 
 - **If you modify locally (without changing files on Git)** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.
 - **If you modify on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made on your Git).  
@@ -129,9 +129,13 @@ This will install and configure ArgoCD to be accessible through your web browser
 Again, the script is self explanatory and comments are there to explain further.
 
 > [!IMPORTANT]
-> At some point, this script will try to port forward **`wil-service`**.
-> (line 105) ``` kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 & ```
-> if it doesn't exist inside your remote repo, the port forwarding will fail and you will not be able to access your app from your browser nor curl it. You either have to set **`wil-service`** in your **`service.yaml`** file on Git, or replace **`wil-service`** inside the **`p3/scripts/argo_setup.sh`** file with whatever your service name is on Git.  
+> At some point, this script will try to port forward the service : **`wil-service`**.
+```sh 
+(line 105) 
+kubectl port-forward -n "$NAMESPACE_DEV" svc/wil-service 8888:8888 & 
+
+```
+> if the service doesn't exist inside your remote repo, the port forwarding will fail and you will not be able to access your app from your browser nor curl it. You either have to set **`wil-service`** in your **`service.yaml`** file on Git, or replace **`wil-service`** inside the **`p3/scripts/argo_setup.sh`** file with whatever your service name is on Git.  
 
 > [!TIP]
 > These scripts need to be ran in your host machine, not inside another VM that you have to make with **Vagrant** as for the previous parts. Because the whole point is to make ArgoCD and your cluster run inside a **Docker Container**, that's why we use **K3d**.  
@@ -150,10 +154,10 @@ If you want to test it, here is a simple test that you can apply :
 
 You should see old pods getting destroyed (thanks to prune : true) and ArgoCD deploying your new apps with the correct image (v1 or v2) !  
 
-You can also check these changes with curl:  
-**Before changes on Git** :
-![CURLONE](../docs/p3/curl1.png)
-**After changes on Git** :
+You can also check these changes with **curl**:  
+**Before changes on Git** :  
+![CURLONE](../docs/p3/curl1.png).  
+**After changes on Git** :  
 ![CURLTWO](../docs/p3/curl2.png)  
 
 ### Congratulations !
