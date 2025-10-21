@@ -91,28 +91,40 @@ Here are some tags that needs further explanation.
 
 ### About selfHealing
 
-This tag will define how your ArgoCD will react to changes.  
-By default it is set to **`false`**, if you let it that way, ArgoCD will not do anything automatically.  
+The **`selfHeal`** setting in ArgoCD determines how the system reacts when there are discrepancies between the state of the cluster and the state defined in your Git repository.
 
-Let's say you want to edit the number of replicas for one of your **Pods** :
+By default, **`selfHeal`** is set to **`false`**. When set to false, ArgoCD will not automatically reconcile differences between the cluster and Git. Instead, the user needs to manually trigger synchronization.
 
-####  selfHeal : false
+#### `selfHeal: false`
 
-- **If you modify files locally and apply changes** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
-> [!CAUTION]
-> You can "force" the sync inside the ArgoCD interface, and it might show that it is **Synced**.  
->
-> **HOWEVER** this is not really the case, as ArgoCD doesn't modify Git files on it's own, you might end up having 2 different configurations of your app without knowing which is the real one, creating a **misalignment** problem.  
->
->It's important to modify Git files and not doing things locally, or if you do, ensure that you commit those changes on your Git repo. (even if it kind of defeats the point of using ArgoCD).
+- **If you modify resources directly in the cluster** (e.g., using `kubectl edit` or `kubectl apply`), ArgoCD will detect that the cluster is **OutOfSync** with the Git repository.  
+  To get things back in sync, you will need to either:
+  1. Modify the Git repository to match your changes, or
+  2. Click the **Sync** button in the ArgoCD UI to apply the state from Git to the cluster, overwriting the local changes.
 
-- **If you modify files on Git** : ArgoCD will say that you are **OutOfSync**, you can press the "Sync" button to sync your app and everything turns **Synced** (the changes will be the ones you have made inside your Git).  
+> **Caution**  
+> Although you can "force" a sync via the ArgoCD interface, this will only make the cluster conform to the state in Git. The cluster's current state will be restored to match the repository, which might not reflect the changes you made manually.
 
-####  selfHeal : true
+- **If you modify resources in Git** (e.g., pushing a commit), ArgoCD will detect that the cluster is **OutOfSync** with Git.  
+  To sync, you can click the **Sync** button in the ArgoCD UI, and the changes in Git will be applied to the cluster, bringing it back in sync with Git.
 
-- **If you modify files locally and apply changes** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.  
+#### `selfHeal: true`
 
-- **If you modify files on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made inside your Git).  
+- **If you modify resources directly in the cluster**, ArgoCD will detect the difference and **automatically** revert the cluster back to the state defined in Git, without any user intervention. This ensures that the cluster will always reflect the desired state in Git, as ArgoCD will continuously monitor and restore it.
+
+- **If you modify resources in Git**, ArgoCD will detect the change and automatically reconcile the cluster to match the new state from Git after a short delay, returning the cluster to a **Synced** state.
+
+---
+
+### Key Differences between `selfHeal: true` and `selfHeal: false`
+
+| Action | `selfHeal: false` | `selfHeal: true` |
+|--------|-------------------|------------------|
+| Modify resources in the cluster (e.g., `kubectl`) | ArgoCD marks the app **OutOfSync**, you must manually click **Sync** to apply the Git state. | ArgoCD automatically reverts changes and reconciles the cluster to match Git. |
+| Modify resources in Git (e.g., commit and push) | ArgoCD marks the app **OutOfSync**, you must manually click **Sync** to apply the Git changes. | ArgoCD automatically applies the changes from Git to the cluster after a short delay. |
+
+> **Note**: It’s best to make changes in Git rather than modifying resources directly in the cluster. Manual changes in the cluster can create discrepancies between the state defined in Git and the actual state in the cluster, which may lead to misalignment issues.
+
 
 ### About Namespaces
 
