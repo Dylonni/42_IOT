@@ -98,7 +98,7 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 
 ####  selfHeal : false
 
-- **If you modify files locally and apply** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
+- **If you modify files locally and apply changes** : ArgoCD will say that you are **OutOfSync**, because it's source of truth (git) doesn't have the same state as your current app. In order to get synchronized again you need to write the same changes as you did locally inside your Git repository. 
 > [!CAUTION]
 > You can "force" the sync inside the ArgoCD interface, and it might show that it is **Synced**.  
 >
@@ -110,7 +110,7 @@ Let's say you want to edit the number of replicas for one of your **Pods** :
 
 ####  selfHeal : true
 
-- **If you modify files locally and apply** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.  
+- **If you modify files locally and apply changes** :  ArgoCD will say that you are **OutOfSync**, and after some time, your cluster will get back to the **Synced** state -> ArgoCD reverted the changes you have made locally and got back to the state defined on Git.  
 
 - **If you modify files on Git** :  ArgoCD will say that you are **OutOfSync** and after some time, your cluster will get back to the **Synced** state (with the changes you have made on your Git).  
 
