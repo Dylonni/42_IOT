@@ -160,7 +160,7 @@ Again, the script is self explanatory and comments are there to explain further.
 > [!TIP]
 > These scripts need to be ran in the VM, not inside another VM that you would have to make with **Vagrant** as for the previous parts. Remember, the whole point of **K3d** is to make ArgoCD and your cluster run inside a **Docker Container**.  
 
-If everything is done correctly you should be able to access and connect to your ArgoCD instance via web browser and have a view to your running app.
+If everything is done correctly you should be able to access and connect to your ArgoCD instance via web browser and have a view of your running app.
 
 ![ARGOLOGIN](../docs/p3/argologin.jpg)  
 
