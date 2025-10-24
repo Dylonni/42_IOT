@@ -130,7 +130,7 @@ Here is a little schema about what it looks like:
 ## Setting Up ArgoCD
 
 > [!IMPORTANT]
-> Before running the setup script, you should modify the **`argo-app.yaml`** file. Make it watch your own freshly created repository (and not mine since you can't commit anything to it).
+> Before running the setup script, you should modify the **`argo-app.yaml`** file and make it watch **YOUR OWN** created remote repository (and not mine since you can't commit anything to it).
 
 As said, the point of ArgoCD is using Git to make changes to your apps, your **`deployment.yaml`** and **`service.yaml`** files will be located in a remote git repository and no more locally. (We don't use ingress there because we are not routing traffic).  
 
