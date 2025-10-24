@@ -158,7 +158,7 @@ Again, the script is self explanatory and comments are there to explain further.
 >You either have to set **`wil-service`** in your **`service.yaml`** file on Git, or replace '**`wil-service`**' inside the **`p3/scripts/argo_setup.sh`** file with whatever your service name is on Git.  
 
 > [!TIP]
-> These scripts need to be ran in your host machine, not inside another VM that you have to make with **Vagrant** as for the previous parts. Because the whole point is to make ArgoCD and your cluster run inside a **Docker Container**, that's why we use **K3d**.  
+> These scripts need to be ran in the VM, not inside another VM that you would have to make with **Vagrant** as for the previous parts. Remember, the whole point of **K3d** is to make ArgoCD and your cluster run inside a **Docker Container**.  
 
 If everything is done correctly you should be able to connect to your ArgoCD instance and have a view to your running app.
 
