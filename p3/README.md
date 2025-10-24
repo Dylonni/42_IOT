@@ -167,12 +167,11 @@ If everything is done correctly you should be able to access and connect to your
 Feel free to try and discover the UI !  
 If you want to test the deployment features, here are simple tests that you can do :  
 
-- Curl your app to get his message
-- Go to your watched repository. 
+- Go to your currently watched repository. 
 - Inside **`deployment.yaml`**, modify **`wil42/playground:v2`** to **`wil42/playground:v1`** or vice versa.
 - Refresh your ArgoCD page. 
 
-You should see old pods getting destroyed (thanks to prune : true) and ArgoCD deploying and syncing with your new app (taking v1 or v2 images) !  
+You should see old pods getting destroyed (thanks to prune : true) and ArgoCD deploying and syncing with your new app (taking v1 or v2 docker images) !  
 
 You can also check these changes with **curl**:  
 
