@@ -165,7 +165,7 @@ If everything is done correctly you should be able to access and connect to your
 ![ARGOLOGIN](../docs/p3/argologin.jpg)  
 
 Feel free to try and discover the UI !  
-If you want to test it, here is a simple test that you can apply :  
+If you want to test the deployment features, here are simple tests that you can do :  
 
 - Curl your app to get his message
 - Go to your watched repository. 
