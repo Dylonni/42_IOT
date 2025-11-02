@@ -85,8 +85,8 @@ Here are some tags that needs further explanation.
 
 - **`repoURL`** : the github repository that ArgoCD will watch on. 
 - **`targetRevision`** : the specific branch to watch on.
-- **`path`** : the specific folder inside the repo to watch on (if there is). 
-- **`server`** : where the apps runs (by default it's the kubernetes 'local' cluster, the one where ArgoCD runs). 
+- **`path`** : the specific folder inside the repo to watch on (if there is one). 
+- **`server`** : where the apps runs (by default it's the kubernetes 'local' cluster, the one where ArgoCD runs in). 
 - **`syncPolicy:automated:prune`** : deletes ressources that are not inside the Git repo anymore. 
 
 ### About selfHealing
